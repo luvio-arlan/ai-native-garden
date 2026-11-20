@@ -34,20 +34,16 @@ AI 写代码几乎不花钱以后，瓶颈就从“写”转到了“验证和�
 ## 它能帮你做什么
 
 1. **给仓库做一次量化体检**：自带零依赖脚本 `scripts/audit-slop.py`，几秒钟扫出：
-   - 巨型文件（默认超过 800 行）和堆满文件的扁平目录
-   - 缺失的护栏：前端 Linter、`golangci-lint`、CI、唯一的 `AGENTS.md`、多余的规则副本（`CLAUDE.md`、`.cursor/rules`）
-   - 类型逃生舱：`as any`、`@ts-ignore`、`as unknown as`
-   - Go 里用 `_ =` 静默丢弃返回值
-   - `watch` / `watchEffect` / `useEffect` 副作用热点
-   - 业务层或接口层的裸 SQL
-   - `TODO / FIXME / HACK` 残留，以及注释占比
-2. **把反复出现的错误变成硬规则**：用一棵纠错升级决策树来定级，并教你写 **Error-Driven** 的报错文案，让 Agent 看一次报错就能改对。
-3. **治理历史债，不用停工大重写**：新代码零容忍，旧文件锁定基线、只降不升（Ratchet 棘轮法），改到哪里就顺手修剪哪里。
+   - **纸面门禁（Paper Linters）**：配置躺在仓库里但 CI/门禁从不调用（如无人执行的 `.golangci.yml`）、未清零的 Lint 棘轮（Ratchet）、遗漏核心业务层的 `-race` 检测
+   - **上下文健康度**：巨型文件（默认超过 800 行）、扁平高密度目录、注释占比、孤儿组件
+   - **全栈逃生舱与风险模式**：TS 逃生舱（`as any` / `as never` / `@ts-ignore` / `as unknown as`）、Go `_ =` 静默丢错、硬编码 `z-index >= 50` 魔数、`watch` / `useEffect` 副作用热点、业务/接口层裸 SQL、嵌套 `lines.filter`、`TODO / FIXME / HACK` 残留
+2. **把反复出现的错误变成硬规则**：用一棵纠错升级决策树来定级，并提供高频隐藏 Bug → L2/L3 机器门禁速查表，写清楚 **Error-Driven** 报错文案让 Agent 看一次就能改对。
+3. **治理历史债，直到棘轮彻底清零**：新代码零容忍，旧文件锁定基线只降不升（Ratchet），并在抽离完成后彻底清空棘轮为 `{}`。
 4. **给 Go + Vue 3 / TypeScript + MySQL + Playwright 栈提供现成模板**：
-   - 前端禁止规则清单（`oxlint` / ESLint）和严格的 `tsconfig`
-   - 精简、高信噪比的 `.golangci.yml`（depguard 防止跨层、errcheck、sqlclosecheck 等）
-   - 前后端同一算法的 Golden Parity 测试，以及 DTO 契约漂移门禁
-   - 本地、CI、发版共用一个门禁入口，迁移只扩不缩，E2E 一条命令跑完
+   - 前端 zero-dep AST 架构脚本 `lint-arch.mjs`（禁逃生舱/`fetch`/裸异步组件/深色 `--ink` 失配/数字 `z-index`/未净化 `v-html`/无 `registerDirtyCheck` 离开守卫/孤儿组件/巨型 scoped CSS 复用）与异步分包 gzip 预算守卫
+   - 后端 Go 原生 AST 单测 `archguard`（零配置随 `go test` 必跑：扫描 `internal/`+`cmd/`、`depguard`、按查询计数 `sqlclosecheck`/`rowserrcheck`、`http-body-close`、`no-unchecked-scan-or-unmarshal`、`no-risky-discard` 与 DDL Parity 校验）
+   - 前后端同一算法的 Golden Parity 测试、DTO 反射/代码生成漂移门禁
+   - 统一门禁入口（含工作区未提交/未跟踪迁移检验、动态包发现、全仓 `-race` 与一键隔离 E2E）
 5. **给 `AGENTS.md` 瘦身**：附一份检查清单，目标是 60 秒内能读完、全文不自相矛盾。
 
 ## 什么时候用
